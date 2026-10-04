@@ -41,7 +41,7 @@ async def lifespan(_: FastAPI):
 
 
 app = FastAPI(title=settings.app_name, docs_url="/docs" if settings.app_env != "production" else None, lifespan=lifespan)
-app.add_middleware(CORSMiddleware, allow_origins=settings.origins, allow_credentials=True, allow_methods=["GET", "POST"], allow_headers=["Content-Type", "X-CSRF-Token"])
+app.add_middleware(CORSMiddleware, allow_origins=settings.origins, allow_credentials=True, allow_methods=["GET", "POST", "DELETE"], allow_headers=["Content-Type", "X-CSRF-Token"])
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 
 
@@ -277,10 +277,23 @@ def create_camera(request: Request, payload: dict = Body(...), db: Session = Dep
     protocol = str(payload.get("protocol", "rtsp")).lower()
     if protocol not in {"rtsp", "http", "onvif"}:
         raise HTTPException(422, "Protocolo de câmera inválido")
-    camera = Camera(name=name, address=address, protocol=protocol, snapshot_url=str(payload.get("snapshot_url", ""))[:500] or None, stream_path=str(payload.get("stream_path", "camera_casa"))[:120])
+    camera = Camera(name=name, address=address, protocol=protocol, snapshot_url=str(payload.get("snapshot_url", ""))[:500] or None, stream_path=str(payload.get("stream_path", "casa"))[:120])
     db.add(camera); db.commit(); db.refresh(camera)
     record_event(db, "INFO", "CameraCreated", f"Câmera cadastrada: {camera.name}", session[0].username)
     return {"id": camera.id, "name": camera.name, "status": "unknown"}
+
+
+@app.delete("/api/cameras/{camera_id}")
+def delete_camera(camera_id: int, request: Request, db: Session = Depends(get_db), session=Depends(auth)):
+    require_write(request, session, "Admin")
+    camera = db.get(Camera, camera_id)
+    if not camera:
+        raise HTTPException(404, "Câmera não encontrada")
+    name = camera.name
+    db.delete(camera)
+    db.commit()
+    record_event(db, "SECURITY", "CameraDeleted", f"Câmera removida: {name}", session[0].username)
+    return {"status": "deleted", "id": camera_id}
 
 
 @app.get("/api/alerts")

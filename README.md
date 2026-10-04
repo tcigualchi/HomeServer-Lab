@@ -87,8 +87,8 @@ docker compose up -d mediamtx
 
 O proxy lê o RTSP em UDP e publica apenas na interface LAN configurada:
 
-- WebRTC: `http://IP_DO_NOTEBOOK:8889/camera_casa`
-- HLS: `http://IP_DO_NOTEBOOK:8888/camera_casa/index.m3u8`
+- WebRTC: `http://IP_DO_NOTEBOOK:8889/casa`
+- HLS: `http://IP_DO_NOTEBOOK:8888/casa/index.m3u8`
 
 Para WebRTC funcionar entre computadores da LAN, permita também UDP `8189` apenas para a sub-rede doméstica:
 

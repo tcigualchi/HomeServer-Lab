@@ -5,9 +5,9 @@ After=docker.service network-online.target
 
 [Service]
 Type=oneshot
-WorkingDirectory=%h/homelab
-EnvironmentFile=%h/homelab/.env
-ExecStart=/usr/bin/docker compose up -d mediamtx
+WorkingDirectory=/home/joaopc/homelab
+EnvironmentFile=/home/joaopc/homelab/.env
+ExecStart=/usr/bin/docker compose up -d mediamtx caddy
 ExecStop=/usr/bin/docker compose down
 RemainAfterExit=yes
 

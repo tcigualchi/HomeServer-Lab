@@ -1,0 +1,15 @@
+https://{$HOMELAB_HOST} {
+    tls internal
+
+    handle_path /hls/* {
+        reverse_proxy {$HOMELAB_HOST}:8888
+    }
+
+    handle /casa* {
+        reverse_proxy {$HOMELAB_HOST}:8889
+    }
+
+    handle {
+        reverse_proxy {$HOMELAB_HOST}:8000
+    }
+}

@@ -5,8 +5,8 @@ services:
     restart: unless-stopped
     environment:
       MTX_WEBRTCADDITIONALHOSTS: ${BIND_HOST}
-      MTX_PATHS_CAMERA_CASA_SOURCE: rtsp://${CAMERA_RTSP_USER}:${CAMERA_RTSP_PASSWORD}@${CAMERA_RTSP_HOST}:554${CAMERA_RTSP_PATH}
-      MTX_PATHS_CAMERA_CASA_RTSPTRANSPORT: udp
+      MTX_PATHS_CASA_SOURCE: rtsp://${CAMERA_RTSP_USER}:${CAMERA_RTSP_PASSWORD}@${CAMERA_RTSP_HOST}:554${CAMERA_RTSP_PATH}
+      MTX_PATHS_CASA_RTSPTRANSPORT: udp
     volumes:
       - ./docker/mediamtx.yml:/mediamtx.yml:ro
       - ./data/recordings:/recordings
@@ -16,3 +16,21 @@ services:
       - "${BIND_HOST}:8189:8189/udp"
     security_opt:
       - no-new-privileges:true
+
+  caddy:
+    image: caddy:2.10-alpine
+    container_name: homelab-caddy
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      HOMELAB_HOST: ${BIND_HOST}
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - mediamtx
+
+volumes:
+  caddy_data:
+  caddy_config:

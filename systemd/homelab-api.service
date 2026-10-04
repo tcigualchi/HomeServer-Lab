@@ -5,15 +5,17 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-WorkingDirectory=%h/homelab
-EnvironmentFile=%h/homelab/.env
-ExecStart=%h/homelab/.venv/bin/uvicorn backend.app.main:app --host ${BIND_HOST} --port ${BIND_PORT}
+User=joaopc
+Group=joaopc
+WorkingDirectory=/home/joaopc/homelab
+EnvironmentFile=/home/joaopc/homelab/.env
+ExecStart=/home/joaopc/homelab/.venv/bin/uvicorn backend.app.main:app --host ${BIND_HOST} --port ${BIND_PORT}
 Restart=on-failure
 RestartSec=5
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
-ReadWritePaths=%h/homelab/data %h/homelab/logs
+ReadWritePaths=/home/joaopc/homelab/data /home/joaopc/homelab/logs
 
 [Install]
 WantedBy=multi-user.target
