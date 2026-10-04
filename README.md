@@ -40,6 +40,8 @@ Abra `http://127.0.0.1:8000/login`. Para serviço permanente, veja `systemd/` e 
 
 O script `create_admin.py` grava apenas um hash Argon2 em `.env`; ele não grava a senha em arquivo. Em produção, prefira um secret manager ou arquivo de ambiente protegido.
 
+Se o banco já possui um administrador e a senha foi alterada, execute `python scripts/reset_admin.py` para atualizar o hash diretamente no banco.
+
 ## API da FASE 1
 
 - `GET /api/health` — health check simples.
@@ -61,7 +63,7 @@ O script `create_admin.py` grava apenas um hash Argon2 em `.env`; ele não grava
 
 ## Operação exclusivamente local
 
-Esta configuração não usa ngrok, Cloudflare Tunnel, Tailscale, Discord, webhooks ou qualquer endpoint público. A API deve permanecer em `127.0.0.1:8000`; o notebook ainda pode consultar a LAN para monitoramento, mas o dashboard só é acessível localmente. Não altere o bind para `0.0.0.0` sem configurar firewall e uma política de autenticação adequada.
+Esta configuração não usa ngrok, Cloudflare Tunnel, Tailscale, Discord, webhooks ou qualquer endpoint público. Para permitir acesso aos computadores da LAN, configure `BIND_HOST` com o IP fixo do notebook na rede doméstica, por exemplo `192.168.1.50`, e restrinja a porta no firewall à sub-rede local. O dashboard ficará acessível em `http://192.168.1.50:8000`; não use `0.0.0.0` sem firewall.
 
 As páginas `/devices`, `/network`, `/cameras`, `/services`, `/alerts`, `/logs` e `/automation` já estão disponíveis após login. A descoberta de rede lê somente a tabela de vizinhos do sistema operacional e faz ping individual; não há varredura de faixa IP.
 
