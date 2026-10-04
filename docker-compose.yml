@@ -1,0 +1,18 @@
+services:
+  mediamtx:
+    image: bluenviron/mediamtx:1.21.1
+    container_name: homelab-mediamtx
+    restart: unless-stopped
+    environment:
+      MTX_WEBRTCADDITIONALHOSTS: ${BIND_HOST}
+      MTX_PATHS_CAMERA_CASA_SOURCE: rtsp://${CAMERA_RTSP_USER}:${CAMERA_RTSP_PASSWORD}@${CAMERA_RTSP_HOST}:554${CAMERA_RTSP_PATH}
+      MTX_PATHS_CAMERA_CASA_RTSPTRANSPORT: udp
+    volumes:
+      - ./docker/mediamtx.yml:/mediamtx.yml:ro
+      - ./data/recordings:/recordings
+    ports:
+      - "${BIND_HOST}:8888:8888"
+      - "${BIND_HOST}:8889:8889"
+      - "${BIND_HOST}:8189:8189/udp"
+    security_opt:
+      - no-new-privileges:true

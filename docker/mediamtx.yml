@@ -1,0 +1,28 @@
+logLevel: info
+logDestinations: [stdout]
+readTimeout: 10s
+writeTimeout: 10s
+udpReadBufferSize: 1048576
+
+# O proxy só publica HTTP/WebRTC na interface LAN configurada pelo docker-compose.
+rtsp: false
+hls: true
+hlsAddress: :8888
+hlsAllowOrigins: ['*']
+webrtc: true
+webrtcAddress: :8889
+webrtcLocalUDPAddress: :8189
+webrtcAdditionalHosts: []
+webrtcAllowOrigins: ['*']
+api: false
+metrics: false
+pprof: false
+
+pathDefaults:
+  sourceOnDemand: true
+  rtspTransport: udp
+  maxReaders: 10
+
+paths:
+  camera_casa:
+    sourceOnDemand: true

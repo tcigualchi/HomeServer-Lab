@@ -101,6 +101,7 @@ class Camera(Base):
     snapshot_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     enabled: Mapped[bool] = mapped_column(Boolean, default=True)
     last_status: Mapped[str] = mapped_column(String(20), default="unknown")
+    stream_path: Mapped[str] = mapped_column(String(120), default="camera_casa")
 
 
 class Alert(Base):

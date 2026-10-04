@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     admin_password_hash: str | None = None
     log_level: str = "INFO"
     allowed_origins: str = "http://127.0.0.1:8000,http://localhost:8000"
+    media_web_url: str = "http://192.168.1.50:8889"
+    media_hls_url: str = "http://192.168.1.50:8888"
 
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, extra="ignore")
 

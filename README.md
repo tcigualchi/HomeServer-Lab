@@ -75,6 +75,31 @@ As páginas `/devices`, `/network`, `/cameras`, `/services`, `/alerts`, `/logs` 
 - O worker local cria alertas de CPU, RAM, disco e mudança de disponibilidade dos hosts cadastrados.
 - MQTT, Home Assistant, Discord e notificações externas permanecem fora desta instalação local. Seus adapters podem ser adicionados sem alterar os modelos centrais.
 
+### Câmera Yoosee local
+
+Para o stream confirmado `192.168.1.57:554/onvif1`, instale Docker/Compose no Kali, copie as variáveis de câmera para `.env` e preencha `CAMERA_RTSP_PASSWORD` com a senha RTSP. Ajuste `BIND_HOST` e as URLs de mídia para o IP LAN do notebook:
+
+```bash
+sudo apt install docker.io docker-compose-plugin
+sudo systemctl enable --now docker
+docker compose up -d mediamtx
+```
+
+O proxy lê o RTSP em UDP e publica apenas na interface LAN configurada:
+
+- WebRTC: `http://IP_DO_NOTEBOOK:8889/camera_casa`
+- HLS: `http://IP_DO_NOTEBOOK:8888/camera_casa/index.m3u8`
+
+Para WebRTC funcionar entre computadores da LAN, permita também UDP `8189` apenas para a sub-rede doméstica:
+
+```bash
+sudo ufw allow from 192.168.1.0/24 to any port 8888 proto tcp
+sudo ufw allow from 192.168.1.0/24 to any port 8889 proto tcp
+sudo ufw allow from 192.168.1.0/24 to any port 8189 proto udp
+```
+
+O arquivo `docker/mediamtx.yml` usa `sourceOnDemand`, então a câmera só é lida enquanto houver um visualizador. O MediaMTX é usado como media router local para converter RTSP em protocolos consumíveis pelo navegador, conforme sua documentação oficial. [MediaMTX — câmeras RTSP](https://mediamtx.org/docs/features/rtsp-cameras-and-servers)
+
 ## Como adicionar um dispositivo
 
 Na fase de dispositivos, implemente um adapter em `backend/app/integrations/` seguindo a interface comum, registre capabilities explícitas e persista configuração não sensível no banco. Credenciais devem referenciar variáveis de ambiente/secret store, nunca ser incluídas em payloads ou logs.

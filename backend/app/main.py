@@ -265,7 +265,7 @@ def service_action(service_id: int, action: str, request: Request, db: Session =
 
 @app.get("/api/cameras")
 def cameras(db: Session = Depends(get_db), session=Depends(auth)):
-    return [{"id": c.id, "name": c.name, "address": c.address, "protocol": c.protocol, "snapshot_url_configured": bool(c.snapshot_url), "status": c.last_status} for c in db.scalars(select(Camera).order_by(Camera.name)).all()]
+    return [{"id": c.id, "name": c.name, "address": c.address, "protocol": c.protocol, "snapshot_url_configured": bool(c.snapshot_url), "status": c.last_status, "stream_path": c.stream_path, "webrtc_url": f"{settings.media_web_url.rstrip('/')}/{c.stream_path}", "hls_url": f"{settings.media_hls_url.rstrip('/')}/{c.stream_path}/index.m3u8"} for c in db.scalars(select(Camera).order_by(Camera.name)).all()]
 
 
 @app.post("/api/cameras")
@@ -277,7 +277,7 @@ def create_camera(request: Request, payload: dict = Body(...), db: Session = Dep
     protocol = str(payload.get("protocol", "rtsp")).lower()
     if protocol not in {"rtsp", "http", "onvif"}:
         raise HTTPException(422, "Protocolo de câmera inválido")
-    camera = Camera(name=name, address=address, protocol=protocol, snapshot_url=str(payload.get("snapshot_url", ""))[:500] or None)
+    camera = Camera(name=name, address=address, protocol=protocol, snapshot_url=str(payload.get("snapshot_url", ""))[:500] or None, stream_path=str(payload.get("stream_path", "camera_casa"))[:120])
     db.add(camera); db.commit(); db.refresh(camera)
     record_event(db, "INFO", "CameraCreated", f"Câmera cadastrada: {camera.name}", session[0].username)
     return {"id": camera.id, "name": camera.name, "status": "unknown"}

@@ -1,0 +1,15 @@
+[Unit]
+Description=Homelab local camera media proxy
+Requires=docker.service
+After=docker.service network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/homelab
+EnvironmentFile=%h/homelab/.env
+ExecStart=/usr/bin/docker compose up -d mediamtx
+ExecStop=/usr/bin/docker compose down
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
