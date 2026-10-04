@@ -1,0 +1,19 @@
+[Unit]
+Description=Homelab Control local monitoring worker
+After=homelab-api.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/homelab
+EnvironmentFile=%h/homelab/.env
+ExecStart=%h/homelab/.venv/bin/python -m backend.app.worker
+Restart=on-failure
+RestartSec=10
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=%h/homelab/data %h/homelab/logs
+
+[Install]
+WantedBy=multi-user.target

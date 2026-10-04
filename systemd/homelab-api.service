@@ -1,0 +1,19 @@
+[Unit]
+Description=Homelab Control API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/homelab
+EnvironmentFile=%h/homelab/.env
+ExecStart=%h/homelab/.venv/bin/uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=%h/homelab/data %h/homelab/logs
+
+[Install]
+WantedBy=multi-user.target
